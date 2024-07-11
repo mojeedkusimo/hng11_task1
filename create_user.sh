@@ -1,44 +1,46 @@
-echo "DevOps Grandmaster";
+echo "Reading file..." >>  /var/log/user_management.log
 
-#sudo useradd $1;
-#sudo groupadd $2;
-#sudo groupmod -a -U $1 $2;
+echo "Storing the first argument to be passed to the shell" >> /var/log/user_management.log
+file=$1
 
-echo "creating an iterator i..."
-i=1;
+echo "Creating a line counter to track progress.." >> /var/log/user_management.log
+line_counter=1
+username="";
+groupnames_list="";
 
-echo "making ; a delimeter in a string..."
-old_ifs="$IFS"
-IFS=";"
+while read each_line
 
-echo "declaring variables to store split string..."
-username=""
-groupnames=""
+	do
+		IFS=";";
+		i=1
+		for each_word in $each_line
 
-echo "spliting string in a loop and updating respective container variables"
-for x in $@
-do 
-	echo "$i - is i"
-	echo "$x is x"
-	if [ $i -eq 1 ]
-	then
-		username=$x;
-	else
-		groupnames=$x;
-	fi
-	i=$((i+1));
-done
-echo "loop ended.."
+		do
+			if [ $i -eq 1 ]
+			then
+				username=$each_word;
+			else
+				groupnames_list=$each_word;
+			fi
 
-echo "creating user from input provided"
-sudo useradd $username
+			i=$((i+1));
+		done
+               echo "Completed splitting line: $line_counter into user: $username and groups: $groupnames_list.";
 
-echo "creating groups in a loop and assinging new user to each group inputted"
-IFS=","
-for y in $groupnames
-do
-	sudo groupadd $y;
-	sudo groupmod -a -U $username $y; 
-done
+		sudo useradd $username;
+		echo "Completed creating user: $username in line: $line_counter"
 
-echo "task completed!..."
+		IFS=","
+		for groupname in $groupnames_list
+		do
+			sudo groupadd $groupname;
+                        echo "Completed creating group: $groupname in line: $line_counter";
+
+			sudo groupmod -a -U $username $groupname;
+                        echo "Completed adding user: $username to group: $groupname in line: $line_counter";
+
+		done
+                echo "Completed processing line: $line_counter"
+		line_counter=$((line_counter+1));
+	done < $file
+echo "task completed!.."

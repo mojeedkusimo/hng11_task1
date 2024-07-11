@@ -1,3 +1,3 @@
-mojeed8;mojeed8Gropu1,mojeed8Group2
-mojeed9;mojeed9Gropu1,mojeed9Group2
-mojeed10;mojeed10Gropu1,mojeed10Group2,mojeed10Group3
+mojeed51;mojeed51Group1
+mojeed52;mojeed52Group1,mojeed52Group2
+mojeed53;mojeed53Group1,mojeed53Group2,mojeed53Group3
