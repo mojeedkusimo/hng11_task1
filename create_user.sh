@@ -1,7 +1,5 @@
-echo "Reading file..." >>  /var/log/user_management.log
-
-echo "Storing the first argument to be passed to the shell" >> /var/log/user_management.log
 file=$1
+echo "Reading file: $file..." >>  /var/log/user_management.log
 
 echo "Creating a line counter to track progress.." >> /var/log/user_management.log
 line_counter=1
@@ -11,6 +9,7 @@ groupnames_list="";
 while read each_line
 
 	do
+		echo "Setting ';' as a text separator for splitting each line into user and group(s).." >> /var/log/user_management.log
 		IFS=";";
 		i=1
 		for each_word in $each_line
@@ -25,22 +24,23 @@ while read each_line
 
 			i=$((i+1));
 		done
-               echo "Completed splitting line: $line_counter into user: $username and groups: $groupnames_list.";
+               echo "Completed splitting line: $line_counter into user: $username and groups: $groupnames_list." >> /var/log/user_management.log;
 
-		sudo useradd $username;
-		echo "Completed creating user: $username in line: $line_counter"
+		sudo useradd $username 2>> /var/log/user_management.log;
+		echo "Completed processing user: $username in line: $line_counter" >> /var/log/user_management.log;
 
+		echo "Setting ',' as a text separator for splitting each line for splitting each group.." >> /var/log/user_management.log
 		IFS=","
 		for groupname in $groupnames_list
 		do
-			sudo groupadd $groupname;
-                        echo "Completed creating group: $groupname in line: $line_counter";
+			sudo groupadd $groupname 2>> /var/log/user_management.log;
+                        echo "Completed processing group: $groupname in line: $line_counter" >> /var/log/user_management.log;
 
-			sudo groupmod -a -U $username $groupname;
-                        echo "Completed adding user: $username to group: $groupname in line: $line_counter";
+			sudo groupmod -a -U $username $groupname 2>> /var/log/user_management.log;
+                        echo "Completed adding user: $username to group: $groupname in line: $line_counter" >> /var/log/user_management.log;
 
 		done
-                echo "Completed processing line: $line_counter"
+                echo "Completed processing line: $line_counter" >> /var/log/user_management.log;
 		line_counter=$((line_counter+1));
 	done < $file
-echo "task completed!.."
+echo "Completed processing user details in $file!.." >> /var/log/user_management.log;
